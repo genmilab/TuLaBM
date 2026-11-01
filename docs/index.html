@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TuLaBM: Tumor-Biased Latent Bridge Matching for Contrast-Enhanced MRI Synthesis</title>
+<meta name="description" content="TuLaBM casts non-contrast to contrast-enhanced MRI translation as Brownian bridge transport in the latent space of a pretrained autoencoder, with a tumor-biased attention mechanism and a boundary-aware loss used during training only." />
+<meta name="theme-color" content="#147b82" />
+<meta property="og:title" content="TuLaBM: Tumor-Biased Latent Bridge Matching for Contrast-Enhanced MRI Synthesis" />
+<meta property="og:description" content="TuLaBM casts non-contrast to contrast-enhanced MRI translation as Brownian bridge transport in the latent space of a pretrained autoencoder, with a tumor-biased attention mechanism and a boundary-aware loss used during training only." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="assets/fig1_architecture.png" />
+<meta name="citation_title" content="TuLaBM: Tumor-Biased Latent Bridge Matching for Contrast-Enhanced MRI Synthesis" />
+<link rel="icon" href="https://raw.githubusercontent.com/genmilab/VGS-Decoding/main/docs/assets/genmilab-logo.png" />
+<link rel="stylesheet" href="project.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script defer src="project.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header"><div class="nav-wrap">
+<a class="brand" href="#top">TuLaBM</a>
+<nav aria-label="Main navigation"><a href="#abstract">Abstract</a><a href="#method">Method</a><a href="#results">Results</a><a href="#code">Code</a><a href="#citation">BibTeX</a></nav>
+<a class="nav-code" href="https://github.com/genmilab/TuLaBM">GitHub <span aria-hidden="true">↗</span></a>
+</div></header>
+<main id="main">
+<section class="hero container" id="top" aria-labelledby="project-title">
+<a class="lab-identity" href="https://github.com/genmilab" aria-label="GenMI-Lab on GitHub">
+<img src="https://raw.githubusercontent.com/genmilab/VGS-Decoding/main/docs/assets/genmilab-logo.png" width="460" height="460" alt="GenMI-Lab logo" />
+<span><strong>GenMI-Lab</strong><span>MBZUAI</span></span></a>
+<p class="project-name">TuLaBM</p>
+<h1 id="project-title">TuLaBM: Tumor-Biased Latent Bridge Matching for Contrast-Enhanced MRI Synthesis</h1>
+<div class="authors" aria-label="Authors"><span><a href="https://github.com/Atharva-Rege">Atharva Atul Rege</a><sup>2&#42;</sup></span><span><a href="https://github.com/adinathdukre">Adinath Madhavrao Dukre</a><sup>1&#42;</sup></span><span>Numan Balci<sup>3</sup></span><span>Dwarikanath Mahapatra<sup>4</sup></span><span>Imran Razzak<sup>1</sup></span></div>
+<div class="affiliations" aria-label="Author affiliations"><span><sup>1</sup>Mohamed bin Zayed University of Artificial Intelligence, Abu Dhabi, UAE</span><span><sup>2</sup>National Institute of Technology Karnataka, Surathkal, India</span><span><sup>3</sup>Cleveland Clinic Abu Dhabi, Abu Dhabi, UAE</span><span><sup>4</sup>Khalifa University, Abu Dhabi, UAE</span></div>
+<p class="equal-contribution"><sup>&#42;</sup>Equal contribution</p>
+<p class="hero-description">Brownian bridge transport in latent space.<br />Tumor-biased attention during training.<br />Contrast-enhanced MRI in 0.097 s per slice.</p>
+<div class="resource-links"><a class="button button-primary" href="https://github.com/genmilab/TuLaBM"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 7-5 5 5 5m8-10 5 5-5 5m-3-12-2 14"/></svg>Code</a><a class="button button-secondary" href="#results">Results <span aria-hidden="true">↓</span></a><a class="button button-secondary" href="#qualitative">Qualitative <span aria-hidden="true">↓</span></a><a class="button button-secondary" href="#citation">BibTeX <span aria-hidden="true">↓</span></a></div>
+<div class="hero-meta"><span>IEEE ISBI 2027 Submission</span></div>
+</section>
+<section class="section abstract-section" id="abstract"><div class="container narrow"><p class="section-kicker">01 / ABSTRACT</p><h2>Abstract</h2><div class="abstract-text"><p>Contrast-enhanced MRI (CE-MRI) is central to tumor assessment but requires gadolinium-based contrast agents (GBCAs), which add cost and raise safety and environmental concerns. Synthesizing CE-MRI from non-contrast MRI (NC-MRI) is an attractive alternative, yet adversarial models are unstable and diffusion models are slow and often misrepresent tumor enhancement. We propose Tumor-Biased Latent Bridge Matching (TuLaBM), which casts NC-to-CE translation as Brownian bridge transport between the two image distributions in the latent space of a pretrained autoencoder. A Tumor-Biased Attention Mechanism (TuBAM) adds a tumor-mask bias to the self-attention logits of the drift network during training, and a boundary-aware loss weights reconstruction errors near tumor margins. On BraTS 2023 GLI, TuLaBM achieves the highest whole-image and tumor-region SSIM among the compared methods; it also transfers to in-house liver MRI in zero-shot and fine-tuned settings, and synthesizes a slice in 0.097 s.</p></div></div></section>
+<section class="figure-section container" id="overview-figure"><figure class="overview-figure"><img src="assets/fig1_architecture.png" alt="Figure 1: TuLaBM overview" loading="lazy" /><figcaption><strong>Figure 1.</strong> Overview of TuLaBM. A frozen VAE encodes the NC and CE images into latents <span class="math inline">z_0</span> and <span class="math inline">z_1</span>. The latent denoiser <span class="math inline">v_\theta</span> predicts the bridge drift at the interpolant <span class="math inline">z_t</span>, from which the terminal latent <span class="math inline">\hat z_1</span> is obtained and decoded. During training, TuBAM adds the tumor bias <span class="math inline">\alpha\,\tilde m \tilde m^\top</span> to the self-attention logits, and the latent, pixel and boundary-weighted losses supervise the model. Inference requires only the NC image.</figcaption></figure></section>
+<section class="section container narrow page-section" id="method"><p class="section-kicker">02 / METHOD</p><h2>Method</h2><ol>
+<li><strong>Latent bridge matching.</strong> An NC slice <span class="math inline">x_0</span> and its paired CE slice <span class="math inline">x_1</span> are encoded by the frozen SDXL VAE into <span class="math inline">z_0 = \mathcal{E}(x_0)</span> and <span class="math inline">z_1 = \mathcal{E}(x_1)</span>. The drift network <span class="math inline">v_\theta</span> (the SDXL U-Net) is trained on the Brownian bridge interpolant <span class="math inline">z_t = (1-t)\,z_0 + t\,z_1 + \sigma\sqrt{t(1-t)}\,\varepsilon</span>, <span class="math inline">\varepsilon \sim \mathcal{N}(0, I)</span>.</li>
+<li><strong>Tumor-Biased Attention (TuBAM).</strong> Adds <span class="math inline">\alpha\, m m^\top</span> to the self-attention logits, where <span class="math inline">m</span> is the tumor mask resampled to each attention resolution. For a tumor query this multiplies the weights of tumor keys by <span class="math inline">e^\alpha</span> (about 1.65 for <span class="math inline">\alpha = 0.5</span>) before renormalization. No parameters are added, and it is disabled in eval mode.</li>
+<li><strong>Boundary-aware loss.</strong> Weights the L1 error by <span class="math inline">w = \exp(-D/\tau)\cdot m</span>, where <span class="math inline">D</span> is the distance to the tumor boundary, clipped at 30 px and normalized to [0, 1]. Weights peak at the margin, decay toward the core and are zero outside the tumor; normalizing by <span class="math inline">\sum w</span> makes the loss independent of tumor size.</li>
+<li><strong>Inference.</strong> The NC latent initializes the bridge at <span class="math inline">t = 0</span>, and the SDE is integrated with the learned drift in <span class="math inline">K</span> Euler–Maruyama steps (<span class="math inline">K = 4</span> in the paper), then decoded. Attention is standard and no tumor mask is used.</li>
+</ol>
+<p>The training objective is</p>
+<p style="overflow-x:auto"><span class="math display">\mathcal{L}_{\mathrm{lat}} = \left\| \frac{z_1 - z_t}{1-t} - v_\theta(z_t, t) \right\|^2, \qquad \hat z_1 = z_t + (1-t)\,v_\theta(z_t, t), \qquad \hat x_1 = \mathcal{D}(\hat z_1)</span></p>
+<p style="overflow-x:auto"><span class="math display">\mathcal{L} = \mathcal{L}_{\mathrm{lat}} + \lambda_{\mathrm{pix}}\,\big|\hat x_1 - x_1\big|_1 + \lambda_{\mathrm{boundary}}\,\mathcal{L}_{\mathrm{boundary}}</span></p>
+<div class="callout callout-note"><strong>Note</strong><p>Because TuBAM and the boundary-aware loss act only during training, the deployed model has the same architecture, cost and inputs as a plain latent bridge model.</p></div>
+</section>
+<section class="section container page-section results-wide" id="results"><div class="narrow"><p class="section-kicker">03 / RESULTS</p><h2>Results</h2><div class="results-summary"><p>Whole-image and tumor-region PSNR (dB) and SSIM (%) on BraTS 2023 GLI (T1n → T1c), mean ± standard deviation over test slices, with inference time per slice, as reported in the paper:</p>
+<div align="center">
+<div class="table-scroll" tabindex="0"><table class="paper-table">
+<thead>
+<tr>
+<th>Method</th>
+<th style="text-align: center;">PSNR ↑</th>
+<th style="text-align: center;">SSIM ↑</th>
+<th style="text-align: center;">Tumor PSNR ↑</th>
+<th style="text-align: center;">Tumor SSIM ↑</th>
+<th style="text-align: center;">Time (s) ↓</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>Pix2Pix</td><td style="text-align: center;">23.53 ± 2.89</td><td style="text-align: center;">87.70 ± 4.25</td><td style="text-align: center;">15.31 ± 4.40</td><td style="text-align: center;">65.37 ± 18.38</td><td style="text-align: center;"><strong>0.024</strong></td></tr>
+<tr><td>ResViT</td><td style="text-align: center;">23.54 ± 2.81</td><td style="text-align: center;">87.43 ± 4.19</td><td style="text-align: center;">15.21 ± 4.41</td><td style="text-align: center;">65.19 ± 17.87</td><td style="text-align: center;">0.028</td></tr>
+<tr><td>Palette</td><td style="text-align: center;">18.95 ± 5.02</td><td style="text-align: center;">39.97 ± 29.09</td><td style="text-align: center;">14.00 ± 4.75</td><td style="text-align: center;">67.86 ± 17.10</td><td style="text-align: center;">1.22</td></tr>
+<tr><td>I²SB</td><td style="text-align: center;">25.01 ± 2.94</td><td style="text-align: center;">89.11 ± 3.99</td><td style="text-align: center;">17.05 ± 4.81</td><td style="text-align: center;">71.59 ± 16.66</td><td style="text-align: center;">11.8</td></tr>
+<tr><td>D³M</td><td style="text-align: center;">25.11 ± 3.33</td><td style="text-align: center;">90.95 ± 3.86</td><td style="text-align: center;">17.33 ± 4.56</td><td style="text-align: center;">73.21 ± 16.22</td><td style="text-align: center;">4.58</td></tr>
+<tr><td><strong>TuLaBM</strong></td><td style="text-align: center;"><strong>25.16 ± 2.58</strong></td><td style="text-align: center;"><strong>92.40 ± 1.51</strong></td><td style="text-align: center;"><strong>18.34 ± 3.01</strong></td><td style="text-align: center;"><strong>88.66 ± 5.78</strong></td><td style="text-align: center;">0.097</td></tr>
+</tbody>
+</table></div>
+</div>
+<ul>
+<li>The largest gain is in the tumor region: SSIM rises from 73.21% to 88.66%, with a standard deviation about three times smaller than that of every baseline.</li>
+<li>Whole-image PSNR is on par with D³M (+0.05 dB).</li>
+<li>TuLaBM is 47–122× faster than the pixel-space models D³M and I²SB, and about 4× slower than the single-pass GANs.</li>
+</ul>
+<details><summary>In-house liver MRI (zero-shot and fine-tuned)</summary>
+<div class="table-scroll" tabindex="0"><table class="paper-table">
+<thead>
+<tr>
+<th>Method</th>
+<th style="text-align: center;">Zero-shot PSNR ↑</th>
+<th style="text-align: center;">Zero-shot SSIM ↑</th>
+<th style="text-align: center;">Fine-tuned PSNR ↑</th>
+<th style="text-align: center;">Fine-tuned SSIM ↑</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>Pix2Pix</td><td style="text-align: center;">16.46 ± 0.93</td><td style="text-align: center;">48.84 ± 0.08</td><td style="text-align: center;">18.65 ± 0.39</td><td style="text-align: center;">50.62 ± 0.06</td></tr>
+<tr><td>ResViT</td><td style="text-align: center;">16.21 ± 1.67</td><td style="text-align: center;">53.73 ± 0.10</td><td style="text-align: center;">18.28 ± 0.95</td><td style="text-align: center;">56.15 ± 0.07</td></tr>
+<tr><td>Palette</td><td style="text-align: center;">15.11 ± 1.90</td><td style="text-align: center;">45.03 ± 2.18</td><td style="text-align: center;">17.21 ± 0.29</td><td style="text-align: center;">52.13 ± 0.06</td></tr>
+<tr><td>I²SB</td><td style="text-align: center;">16.47 ± 1.70</td><td style="text-align: center;">50.14 ± 0.40</td><td style="text-align: center;">18.70 ± 1.29</td><td style="text-align: center;">56.17 ± 0.01</td></tr>
+<tr><td>D³M</td><td style="text-align: center;">16.50 ± 3.45</td><td style="text-align: center;">57.13 ± 1.02</td><td style="text-align: center;">18.73 ± 1.40</td><td style="text-align: center;">58.19 ± 0.03</td></tr>
+<tr><td><strong>TuLaBM</strong></td><td style="text-align: center;"><strong>16.57 ± 0.55</strong></td><td style="text-align: center;"><strong>58.30 ± 9.17</strong></td><td style="text-align: center;"><strong>19.34 ± 1.53</strong></td><td style="text-align: center;"><strong>63.60 ± 9.45</strong></td></tr>
+</tbody>
+</table></div>
+<p>The BraTS-trained model is applied directly (zero-shot) and after fine-tuning on five liver volumes. The liver data are not released.</p>
+</details>
+<details><summary>Ablation on BraTS 2023 GLI</summary>
+<div class="table-scroll" tabindex="0"><table class="paper-table">
+<thead>
+<tr>
+<th>Variant</th>
+<th style="text-align: center;">PSNR ↑</th>
+<th style="text-align: center;">SSIM ↑</th>
+<th style="text-align: center;">Tumor PSNR ↑</th>
+<th style="text-align: center;">Tumor SSIM ↑</th>
+</tr>
+</thead>
+<tbody>
+<tr><td><strong>TuLaBM</strong></td><td style="text-align: center;"><strong>25.16 ± 2.58</strong></td><td style="text-align: center;"><strong>92.40 ± 1.51</strong></td><td style="text-align: center;"><strong>18.34 ± 3.01</strong></td><td style="text-align: center;"><strong>88.66 ± 5.78</strong></td></tr>
+<tr><td>w/o boundary loss</td><td style="text-align: center;">22.53 ± 2.46</td><td style="text-align: center;">88.13 ± 1.35</td><td style="text-align: center;">16.34 ± 3.22</td><td style="text-align: center;">84.17 ± 7.20</td></tr>
+<tr><td>w/o boundary loss, TuBAM</td><td style="text-align: center;">22.19 ± 2.44</td><td style="text-align: center;">88.09</td><td style="text-align: center;">16.38 ± 3.18</td><td style="text-align: center;">84.16 ± 7.13</td></tr>
+</tbody>
+</table></div>
+<p>The boundary-aware loss drives most of the gain. TuBAM's contribution is small: it lowers whole-image PSNR from 22.53 to 22.19 dB when removed, while the tumor-region metrics barely change.</p>
+</details>
+</div></div>
+<figure class="paper-figure" id="qualitative"><img src="assets/fig2_qualitative.png" alt="Figure 2: qualitative comparison on BraTS and liver MRI" loading="lazy" /><figcaption><strong>Figure 2.</strong> Qualitative comparison of synthesized CE-MRI on BraTS 2023 GLI (rows 1–2) and in-house liver MRI (rows 3–4). Arrows mark enhancing tumor and vessels. TuLaBM reproduces the enhancing tumor rim and its margins more faithfully than the baselines. Pix2Pix and ResViT produce false-positive enhancement, and D³M delineates tumor boundaries less precisely.</figcaption></figure></section>
+<section class="section container narrow page-section" id="code"><p class="section-kicker">04 / CODE</p><h2>Code and usage</h2><details open><summary>Installation</summary><pre><code class="language-bash">git clone https://github.com/genmilab/TuLaBM.git
+cd TuLaBM
+conda create -n tulabm python=3.10 -y
+conda activate tulabm
+pip install -e .
+</code></pre>
+<p>Requirements: Python ≥ 3.10, PyTorch 2.7, diffusers 0.32, Lightning 2.5, NiBabel, SciPy and scikit-image (full list in <code>requirements.txt</code>). The SDXL VAE and U-Net are downloaded from <a href="https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0">stabilityai/stable-diffusion-xl-base-1.0</a> on first use.</p></details>
+<details><summary>Data</summary><p>Download the BraTS 2023 GLI training and validation releases from Synapse into <code>data/</code>, then build the slice shards:</p>
+<pre><code class="language-bash">python scripts/construct_dataset.py
+</code></pre>
+<p>This clips each volume to its 0.1th–99.9th intensity percentiles, rescales to [0, 1], zero-pads axial slices to 256 × 256 and writes, per slice, the T1n source, T1c target, tumor mask (union of all labels) and boundary distance map as WebDataset shards. The training release is split 80/20 at the subject level (seed 42; 1,001 / 250 volumes), and the 219 volumes of the validation release form the test set. Training and validation slices with less than 3% foreground are discarded.</p></details>
+<details><summary>Pretrained Weights</summary><p>The BraTS 2023 GLI checkpoint (<code>tulabm_brats2023_gli.ckpt</code>, T1n → T1c, latent 4 × 32 × 32, 4 steps) will be released in the <a href="https://github.com/genmilab/TuLaBM#-pretrained-weights">repository</a>.</p></details>
+<details><summary>Training</summary><pre><code class="language-bash">python examples/training/train_tulabm.py examples/training/config/brats.yaml
+</code></pre>
+<p>Set <code>train_shards</code>, <code>validation_shards</code> and <code>save_ckpt_path</code> in the config first. The configuration reported in the paper:</p>
+<div class="table-scroll" tabindex="0"><table class="paper-table">
+<thead>
+<tr><th>Key</th><th>Value</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>selected_timesteps</code>, <code>prob</code></td><td>[250, 500, 750, 1000], uniform</td><td>training timesteps t ∈ {0, ¼, ½, ¾}</td></tr>
+<tr><td><code>bridge_noise_sigma</code></td><td>0.008</td><td>bridge noise σ</td></tr>
+<tr><td><code>attention_bias_weight</code></td><td>0.5</td><td>TuBAM bias strength α</td></tr>
+<tr><td><code>boundary_tau</code></td><td>0.25</td><td>boundary-loss temperature τ</td></tr>
+<tr><td><code>latent_loss_weight</code></td><td>1.0</td><td>weight of L<sub>lat</sub> (L2)</td></tr>
+<tr><td><code>pixel_loss_weight</code></td><td>18.0</td><td>λ<sub>pix</sub> (L1)</td></tr>
+<tr><td><code>boundary_loss_weight</code></td><td>14.0</td><td>λ<sub>boundary</sub></td></tr>
+<tr><td><code>learning_rate</code>, <code>optimizer</code></td><td>4e-5, AdamW</td><td>optimizer</td></tr>
+<tr><td><code>batch_size</code>, <code>max_steps</code></td><td>8, 50,000</td><td>about 10 h on one NVIDIA A100 (bf16)</td></tr>
+</tbody>
+</table></div></details>
+<details><summary>Inference and Evaluation</summary><pre><code class="language-bash">python scripts/construct_test_dataset.py   # -&gt; data/BraTS2023_GLI_test/{source,target,mask}
+
+python examples/inference/inference_tulabm.py \
+  --config examples/inference/config/brats.yaml \
+  --ckpt_path /path/to/BraTS2023_GLI_ckpts/last.ckpt \
+  --source_dir data/BraTS2023_GLI_test/source \
+  --target_dir data/BraTS2023_GLI_test/target \
+  --mask_dir data/BraTS2023_GLI_test/mask \
+  --final_dir results/brats \
+  --num_inference_steps 4
+
+python scripts/evaluate.py \
+  --pred_dir results/brats/output \
+  --target_dir results/brats/target \
+  --mask_dir results/brats/mask \
+  --out_csv results/brats/metrics.csv
+</code></pre>
+<p>Only <code>--source_dir</code> is needed to synthesize; <code>--target_dir</code> and <code>--mask_dir</code> copy the references next to the predictions for evaluation. <code>evaluate.py</code> reports whole-image and tumor-region PSNR and SSIM (Gaussian window, σ = 1.5) as mean ± std over slices. Tumor-region metrics use only slices that contain tumor.</p></details>
+<details><summary>Limitations</summary><ul>
+<li>The model is 2D and maps a single NC sequence (T1n) to T1c, without T2-weighted or FLAIR inputs or through-plane context.</li>
+<li>Training requires tumor annotations, and the frozen VAE, pretrained on natural images, bounds the attainable reconstruction quality.</li>
+<li>Zero-shot liver results remain far below in-domain performance; a new anatomy still needs target-domain data.</li>
+<li>PSNR and SSIM do not establish diagnostic equivalence. A reader study and downstream segmentation on synthesized images are still needed.</li>
+</ul></details></section>
+<section class="section citation-section" id="citation"><div class="container narrow"><p class="section-kicker">05 / CITATION</p><div class="citation-heading"><h2>BibTeX</h2><button class="copy-button light-copy" data-copy="bibtex" type="button">Copy BibTeX</button></div><pre class="bibtex"><code id="bibtex">@misc{rege2026tulabm,
+  title  = {TuLaBM: Tumor-Biased Latent Bridge Matching for Contrast-Enhanced MRI Synthesis},
+  author = {Rege, Atharva Atul and Dukre, Adinath Madhavrao and Balci, Numan and Mahapatra, Dwarikanath and Razzak, Imran},
+  note   = {Submitted to IEEE ISBI 2027},
+  year   = {2026},
+  url    = {https://github.com/genmilab/TuLaBM}
+}</code></pre></div></section>
+<section class="section container narrow page-section small-section" id="acknowledgments"><h3>Acknowledgments</h3><p>The code builds on <a href="https://github.com/gojasper/LBM">LBM: Latent Bridge Matching</a> (Chadebec et al., 2025) and uses the SDXL VAE and U-Net. The baselines are Pix2Pix, ResViT, Palette, I²SB and D³M. We thank the organizers of the BraTS 2023 challenge, and acknowledge the support of Mohamed bin Zayed University of Artificial Intelligence (MBZUAI) and Cleveland Clinic Abu Dhabi.</p></section>
+<section class="section container narrow page-section small-section" id="contact"><h3>Contact</h3><p>For questions or collaboration, please open an <a href="https://github.com/genmilab/TuLaBM/issues">issue</a> or reach out to <a href="https://github.com/adinathdukre">Adinath Madhavrao Dukre</a>.</p></section>
+<section class="section container narrow page-section small-section" id="license"><h3>License</h3><p>The code is released under the CC BY-NC 4.0 license (<a href="https://github.com/genmilab/TuLaBM/blob/main/LICENSE">LICENSE</a>). The models are trained on BraTS 2023 GLI.</p>
+<div class="callout callout-important"><strong>Important</strong><p>TuLaBM is intended for research only. It is not validated for clinical use and must not inform any diagnostic or treatment decision.</p></div></section>
+</main>
+<footer class="site-footer"><div class="container">
+<a class="lab-footer" href="https://github.com/genmilab" aria-label="GenMI-Lab on GitHub">
+<img src="https://raw.githubusercontent.com/genmilab/VGS-Decoding/main/docs/assets/genmilab-logo.png" width="460" height="460" loading="lazy" alt="GenMI-Lab logo" /><span>GenMI-Lab</span></a>
+<p>Research code</p>
+<div><a href="https://github.com/genmilab/TuLaBM">Source code</a><a href="https://github.com/genmilab/TuLaBM/blob/main/LICENSE">Code license</a></div>
+</div></footer>
+<div class="sr-only" id="copy-status" role="status" aria-live="polite"></div>
+</body>
+</html>
