@@ -3,6 +3,16 @@
 <strong>TuLaBM: Tumor-Biased Latent Bridge Matching for Contrast-Enhanced MRI Synthesis</strong>
 </h1>
 
+<p align="center">
+Atharva Atul Rege<sup>2,*</sup>&nbsp;&nbsp;&nbsp;Adinath Madhavrao Dukre<sup>1,*</sup>&nbsp;&nbsp;&nbsp;Numan Balci<sup>3</sup>&nbsp;&nbsp;&nbsp;Dwarikanath Mahapatra<sup>4</sup>&nbsp;&nbsp;&nbsp;Imran Razzak<sup>1</sup>
+<br>
+<sup>1</sup>Mohamed bin Zayed University of Artificial Intelligence, Abu Dhabi, UAE&nbsp;&nbsp;<sup>2</sup>National Institute of Technology Karnataka, Surathkal, India
+<br>
+<sup>3</sup>Cleveland Clinic Abu Dhabi, Abu Dhabi, UAE&nbsp;&nbsp;<sup>4</sup>Khalifa University, Abu Dhabi, UAE
+<br>
+<sup>*</sup>Equal contribution
+</p>
+
 <div align="center">
 
 <a href="https://git.io/typing-svg">
